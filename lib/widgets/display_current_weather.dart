@@ -1,25 +1,25 @@
 import 'package:dweather/components/colors.dart';
 import 'package:dweather/models/weather.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class DisplayCurrentWeather extends StatelessWidget {
   const DisplayCurrentWeather({
     super.key,
     required this.currentWeather,
   });
-
   final CurrentWeather? currentWeather;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 200,
-          child: Lottie.asset("assets/animations/cloudThunder.json"),
-        ),
+            height: 150,
+            child: Image.network(
+              "https:${currentWeather!.icon.toString()}",
+              filterQuality: FilterQuality.high,
+              fit: BoxFit.cover,
+            )),
         Text(
           "${currentWeather!.tempInC.toString()}°C",
           style: TextStyle(
@@ -35,7 +35,9 @@ class DisplayCurrentWeather extends StatelessWidget {
             Text(
               currentWeather!.name,
               style: TextStyle(
-                  color: navColor, fontSize: 25, fontWeight: FontWeight.w400),
+                  color: textColor.withOpacity(0.7),
+                  fontSize: 25,
+                  fontWeight: FontWeight.w400),
             )
           ],
         )

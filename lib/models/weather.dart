@@ -29,6 +29,42 @@ class CurrentWeather {
   }
 }
 
+class ForeCastCurrentDay {
+  final String date;
+  final String condition;
+  final double maxTempInC;
+  final double minTempInC;
+  final double maxTempInF;
+  final double minTempInF;
+  final double avgHumidity;
+  final int dailyChanceOfRain;
+
+  ForeCastCurrentDay({
+    required this.date,
+    required this.condition,
+    required this.maxTempInC,
+    required this.minTempInC,
+    required this.maxTempInF,
+    required this.minTempInF,
+    required this.avgHumidity,
+    required this.dailyChanceOfRain,
+  });
+
+  factory ForeCastCurrentDay.fromJson(Map<String, dynamic> json) {
+    return ForeCastCurrentDay(
+      date: json["forecast"]["forecastday"][0]["date"],
+      condition: json["forecast"]["forecastday"][0]["day"]["condition"]["text"],
+      maxTempInC: json["forecast"]["forecastday"][0]["day"]["maxtemp_c"],
+      minTempInC: json["forecast"]["forecastday"][0]["day"]["mintemp_c"],
+      maxTempInF: json["forecast"]["forecastday"][0]["day"]["maxtemp_f"],
+      minTempInF: json["forecast"]["forecastday"][0]["day"]["mintemp_f"],
+      avgHumidity: json["forecast"]["forecastday"][0]["day"]["avghumidity"],
+      dailyChanceOfRain: json["forecast"]["forecastday"][0]["day"]
+          ["daily_chance_of_rain"],
+    );
+  }
+}
+
 class ForeCastDayOne {
   final String date;
   final String condition;

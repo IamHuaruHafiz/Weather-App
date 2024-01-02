@@ -21,21 +21,13 @@ class RowItem extends StatelessWidget {
             Flexible(
               child: Text(
                 "$name:",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w300,
-                  color: textColor,
-                ),
+                style: style,
               ),
             ),
             Flexible(
               child: Text(
                 _countryName ?? "No data",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w300,
-                  color: textColor,
-                ),
+                style: style,
               ),
             ),
           ],

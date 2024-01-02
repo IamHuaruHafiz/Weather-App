@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:dweather/widgets/display_current_weather.dart';
+import 'package:dweather/widgets/fore_cast_current_day.dart';
 import 'package:dweather/widgets/fore_cast_next_day.dart';
 import 'package:dweather/widgets/fore_cast_next_two_days.dart';
+import 'package:dweather/widgets/get_location_button.dart';
 import 'package:dweather/widgets/shimmer_effect.dart';
 import 'package:http/http.dart' as http;
 import 'package:dweather/components/api_key.dart';
@@ -19,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   CurrentWeather? currentWeather;
+  ForeCastCurrentDay? foreCastCurrentDay;
   ForeCastDayOne? foreCastDayOne;
   ForeCastDayTwo? foreCastDayTwo;
   Position? _currentPosition;
@@ -101,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (response.statusCode == 200) {
       final decodedResponse = jsonDecode(response.body) as Map<String, dynamic>;
       setState(() {
+        foreCastCurrentDay = ForeCastCurrentDay.fromJson(decodedResponse);
         foreCastDayOne = ForeCastDayOne.fromJson(decodedResponse);
         foreCastDayTwo = ForeCastDayTwo.fromJson(decodedResponse);
       });
@@ -109,9 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    getCurrentPosition();
-
     super.initState();
+    getCurrentPosition();
   }
 
   @override
@@ -123,9 +126,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          actions: const [
+            GetLocationButton(),
+          ],
+        ),
         backgroundColor: bgColor,
         body: Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: currentWeather == null
               ? const ShimmerEffect()
               : Column(
@@ -139,18 +148,36 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 24,
                           fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    ForeCastNextDay(
-                      foreCastDayOne: foreCastDayOne,
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    ForeCastNextTwoDays(
-                      foreCastDayTwo: foreCastDayTwo,
-                    ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        color: bgColor,
+                        onRefresh: () async {
+                          await getCurrentPosition();
+                        },
+                        child: ListView(
+                          children: [
+                            ForeCastToday(
+                                foreCastCurrentDay: foreCastCurrentDay),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            foreCastDayOne == null
+                                ? const ShimmerEffect()
+                                : ForeCastNextDay(
+                                    foreCastDayOne: foreCastDayOne,
+                                  ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            foreCastDayTwo == null
+                                ? const ShimmerEffect()
+                                : ForeCastNextTwoDays(
+                                    foreCastDayTwo: foreCastDayTwo,
+                                  ),
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
         ));

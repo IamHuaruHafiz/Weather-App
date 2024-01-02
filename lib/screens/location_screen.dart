@@ -7,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
-
   @override
   State<LocationScreen> createState() => _LocationScreenState();
 }
@@ -23,6 +22,7 @@ class _LocationScreenState extends State<LocationScreen> {
   String? _name;
   String? _subAdministrativeArea;
   Position? _currentPosition;
+  bool isLoading = false;
   CurrentWeather? currentWeather;
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -64,6 +64,9 @@ class _LocationScreenState extends State<LocationScreen> {
   Future<void> getCurrentPosition() async {
     final getPermissions = await _handleLocationPermission();
     if (!getPermissions) return;
+    setState(() {
+      isLoading = true;
+    });
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() {
@@ -90,6 +93,7 @@ class _LocationScreenState extends State<LocationScreen> {
         _localityName = "${place.locality}";
         _subAdministrativeArea = "${place.subAdministrativeArea}";
         _name = "${place.name}";
+        isLoading = false;
       });
     }).catchError((e) {
       debugPrint(e.toString());
@@ -99,52 +103,64 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(color: textColor),
+          title: Text(
+            "Know your location",
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w700, color: textColor),
+          ),
+        ),
         backgroundColor: bgColor,
         body: SingleChildScrollView(
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  RowItem(name: "Locality", methodName: _localityName),
-                  RowItem(name: "Name", methodName: _name),
-                  RowItem(name: "Sublocality", methodName: _subLocality),
-                  RowItem(
-                      name: "Administrative area",
-                      methodName: _administrativeArea),
-                  RowItem(
-                      name: "Sub-Administrative area",
-                      methodName: _subAdministrativeArea),
-                  RowItem(name: "Street name", methodName: _streetName),
-                  RowItem(name: "Country name", methodName: _countryName),
-                  RowItem(name: "Country code", methodName: _countryCode),
-                  RowItem(
-                      name: "Latitude",
-                      methodName: _currentPosition?.latitude.toString()),
-                  RowItem(
-                      name: "Longitude",
-                      methodName: _currentPosition?.longitude.toString()),
-                  RowItem(name: "Postal code", methodName: _postalCode),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll<Color>(
-                              Colors.black.withOpacity(0.4))),
-                      onPressed: () {
-                        getCurrentPosition();
-                      },
-                      child: Text(
-                        "Get current location",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: textColor,
-                        ),
-                      ))
-                ],
-              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: [
+                RowItem(name: "Locality", methodName: _localityName),
+                RowItem(name: "Name", methodName: _name),
+                RowItem(name: "Sublocality", methodName: _subLocality),
+                RowItem(
+                    name: "Administrative area",
+                    methodName: _administrativeArea),
+                RowItem(
+                    name: "Sub-Administrative area",
+                    methodName: _subAdministrativeArea),
+                RowItem(name: "Street name", methodName: _streetName),
+                RowItem(name: "Country name", methodName: _countryName),
+                RowItem(name: "Country code", methodName: _countryCode),
+                RowItem(
+                    name: "Latitude",
+                    methodName: _currentPosition?.latitude.toString()),
+                RowItem(
+                    name: "Longitude",
+                    methodName: _currentPosition?.longitude.toString()),
+                RowItem(name: "Postal code", methodName: _postalCode),
+                const SizedBox(
+                  height: 20,
+                ),
+                isLoading
+                    ? CircularProgressIndicator(
+                        color: textColor,
+                      )
+                    : ElevatedButton(
+                        style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStatePropertyAll<Color>(bgColor),
+                            backgroundColor:
+                                MaterialStatePropertyAll<Color>(textColor)),
+                        onPressed: () {
+                          getCurrentPosition();
+                        },
+                        child: const Text(
+                          "Get current location",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ))
+              ],
             ),
           ),
         ));
