@@ -19,6 +19,17 @@ class DisplayCurrentWeather extends StatelessWidget {
               "https:${currentWeather!.icon.toString()}",
               filterQuality: FilterQuality.high,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: textColor,
+                    ),
+                  );
+                }
+              },
             )),
         Text(
           "${currentWeather!.tempInC.toString()}°C",

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dweather/widgets/display_current_weather.dart';
 import 'package:dweather/widgets/fore_cast_current_day.dart';
 import 'package:dweather/widgets/fore_cast_next_day.dart';
@@ -11,6 +12,7 @@ import 'package:dweather/components/colors.dart';
 import 'package:dweather/models/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -111,10 +113,41 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<bool> checkConnectivity() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi ||
+        connectivityResult == ConnectivityResult.vpn ||
+        connectivityResult == ConnectivityResult.other) {
+      return true;
+    }
+    return false;
+  }
+
+  bool noconnection = false;
+
   @override
   void initState() {
+    var subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        setState(() {
+          noconnection = true;
+        });
+      }
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi ||
+          result == ConnectivityResult.vpn ||
+          result == ConnectivityResult.other) {
+        setState(() {
+          noconnection = false;
+        });
+      }
+      getCurrentPosition();
+    });
     super.initState();
-    getCurrentPosition();
   }
 
   @override
@@ -126,60 +159,70 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          actions: const [
-            GetLocationButton(),
-          ],
-        ),
+        appBar: noconnection == true
+            ? null
+            : AppBar(
+                backgroundColor: Colors.transparent,
+                actions: const [
+                  GetLocationButton(),
+                ],
+              ),
         backgroundColor: bgColor,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: currentWeather == null
-              ? const ShimmerEffect()
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DisplayCurrentWeather(currentWeather: currentWeather),
-                    Text(
-                      "Weather Forecast",
-                      style: TextStyle(
-                          color: textColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Expanded(
-                      child: RefreshIndicator(
-                        color: bgColor,
-                        onRefresh: () async {
-                          await getCurrentPosition();
-                        },
-                        child: ListView(
-                          children: [
-                            ForeCastToday(
-                                foreCastCurrentDay: foreCastCurrentDay),
-                            const SizedBox(
-                              height: 12,
+        body: noconnection == true
+            ? Center(
+                child: Lottie.asset("assets/animations/network.json",
+                    height: 200, width: 200),
+              )
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: currentWeather == null
+                    ? const ShimmerEffect()
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DisplayCurrentWeather(currentWeather: currentWeather),
+                          Text(
+                            "Weather Forecast",
+                            style: TextStyle(
+                                color: textColor,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Expanded(
+                            child: RefreshIndicator(
+                              color: bgColor,
+                              onRefresh: () async {
+                                await getCurrentPosition();
+                              },
+                              child: foreCastCurrentDay == null
+                                  ? Center(
+                                      child: CircularProgressIndicator(
+                                        color: textColor,
+                                      ),
+                                    )
+                                  : ListView(
+                                      children: [
+                                        ForeCastToday(
+                                            foreCastCurrentDay:
+                                                foreCastCurrentDay),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        ForeCastNextDay(
+                                          foreCastDayOne: foreCastDayOne,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        ForeCastNextTwoDays(
+                                          foreCastDayTwo: foreCastDayTwo,
+                                        ),
+                                      ],
+                                    ),
                             ),
-                            foreCastDayOne == null
-                                ? const ShimmerEffect()
-                                : ForeCastNextDay(
-                                    foreCastDayOne: foreCastDayOne,
-                                  ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            foreCastDayTwo == null
-                                ? const ShimmerEffect()
-                                : ForeCastNextTwoDays(
-                                    foreCastDayTwo: foreCastDayTwo,
-                                  ),
-                          ],
-                        ),
+                          )
+                        ],
                       ),
-                    )
-                  ],
-                ),
-        ));
+              ));
   }
 }
