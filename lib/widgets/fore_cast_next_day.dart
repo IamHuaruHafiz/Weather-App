@@ -13,7 +13,8 @@ class ForeCastNextDay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(4),
+      margin: const EdgeInsets.all(2),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -27,21 +28,25 @@ class ForeCastNextDay extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                foreCastDayOne != null
-                    ? "Condition: ${foreCastDayOne!.condition}"
-                    : "",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300,
-                    color: textColor),
+              Flexible(
+                child: Text(
+                  foreCastDayOne != null
+                      ? "Condition: ${foreCastDayOne!.condition}"
+                      : "",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      color: textColor),
+                ),
               ),
-              Text(
-                foreCastDayOne != null ? foreCastDayOne!.date : "",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300,
-                    color: textColor),
+              Flexible(
+                child: Text(
+                  foreCastDayOne != null ? foreCastDayOne!.date : "",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      color: textColor),
+                ),
               ),
             ],
           ),
@@ -62,23 +67,27 @@ class ForeCastNextDay extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                foreCastDayOne != null
-                    ? "Humidity: ${foreCastDayOne!.avgHumidity}"
-                    : "",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300,
-                    color: textColor),
+              Flexible(
+                child: Text(
+                  foreCastDayOne != null
+                      ? "Humidity: ${foreCastDayOne!.avgHumidity}"
+                      : "",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      color: textColor),
+                ),
               ),
-              Text(
-                foreCastDayOne != null
-                    ? "WillRain:${foreCastDayOne!.dailyChanceOfRain == 0 ? "False" : "True"}"
-                    : "",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300,
-                    color: textColor),
+              Flexible(
+                child: Text(
+                  foreCastDayOne != null
+                      ? "WillRain:${foreCastDayOne!.dailyChanceOfRain == 0 ? "False" : "True"}"
+                      : "",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      color: textColor),
+                ),
               )
             ],
           )

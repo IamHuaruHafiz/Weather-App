@@ -28,6 +28,7 @@ class RowItem extends StatelessWidget {
               child: Text(
                 _countryName ?? "No data",
                 style: style,
+                textAlign: TextAlign.right,
               ),
             ),
           ],

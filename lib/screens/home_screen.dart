@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dweather/widgets/display_current_weather.dart';
@@ -61,12 +62,17 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       return false;
     }
+
     return true;
   }
 
-  Future<void> getCurrentPosition() async {
+  Future getCurrentPosition() async {
     final getPermissions = await _handleLocationPermission();
-    if (!getPermissions) return;
+    if (!getPermissions) {
+      return const Center(
+        child: Text("Enable Location services"),
+      );
+    }
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() {
@@ -113,20 +119,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<bool> checkConnectivity() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.mobile ||
-        connectivityResult == ConnectivityResult.wifi ||
-        connectivityResult == ConnectivityResult.vpn ||
-        connectivityResult == ConnectivityResult.other) {
-      return true;
-    }
-    return false;
-  }
-
   bool noconnection = false;
-
+  bool locationEnabled = false;
   @override
   void initState() {
     var subscription = Connectivity()
@@ -143,10 +137,24 @@ class _HomeScreenState extends State<HomeScreen> {
           result == ConnectivityResult.other) {
         setState(() {
           noconnection = false;
+          getCurrentPosition();
         });
       }
-      getCurrentPosition();
     });
+    StreamSubscription<ServiceStatus> status =
+        Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+      if (status == ServiceStatus.enabled) {
+        setState(() {
+          locationEnabled = true;
+          getCurrentPosition();
+        });
+      } else {
+        setState(() {
+          locationEnabled = false;
+        });
+      }
+    });
+
     super.initState();
   }
 
@@ -161,68 +169,87 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
         appBar: noconnection == true
             ? null
-            : AppBar(
-                backgroundColor: Colors.transparent,
-                actions: const [
-                  GetLocationButton(),
-                ],
-              ),
+            : locationEnabled == false
+                ? null
+                : AppBar(
+                    backgroundColor: Colors.transparent,
+                    actions: const [
+                      GetLocationButton(),
+                    ],
+                  ),
         backgroundColor: bgColor,
         body: noconnection == true
             ? Center(
                 child: Lottie.asset("assets/animations/network.json",
                     height: 200, width: 200),
               )
-            : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: currentWeather == null
-                    ? const ShimmerEffect()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          DisplayCurrentWeather(currentWeather: currentWeather),
-                          Text(
-                            "Weather Forecast",
-                            style: TextStyle(
-                                color: textColor,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Expanded(
-                            child: RefreshIndicator(
-                              color: bgColor,
-                              onRefresh: () async {
-                                await getCurrentPosition();
-                              },
-                              child: foreCastCurrentDay == null
-                                  ? Center(
-                                      child: CircularProgressIndicator(
+            : locationEnabled == false
+                ? Center(
+                    child: Lottie.asset("assets/animations/location.json",
+                        height: 200, width: 200),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: currentWeather == null
+                        ? const ShimmerEffect()
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DisplayCurrentWeather(
+                                  currentWeather: currentWeather),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Weather Forecast",
+                                    style: TextStyle(
                                         color: textColor,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  IconButton.outlined(
+                                      onPressed: () {
+                                        setState(() {
+                                          currentWeather = null;
+                                        });
+                                        getCurrentPosition();
+                                      },
+                                      icon: Icon(
+                                        Icons.cyclone_sharp,
+                                        color: textColor,
+                                      ))
+                                ],
+                              ),
+                              Expanded(
+                                child: foreCastCurrentDay == null
+                                    ? Center(
+                                        child: CircularProgressIndicator(
+                                          color: textColor,
+                                        ),
+                                      )
+                                    : ListView(
+                                        children: [
+                                          ForeCastToday(
+                                              foreCastCurrentDay:
+                                                  foreCastCurrentDay),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          ForeCastNextDay(
+                                            foreCastDayOne: foreCastDayOne,
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          ForeCastNextTwoDays(
+                                            foreCastDayTwo: foreCastDayTwo,
+                                          ),
+                                        ],
                                       ),
-                                    )
-                                  : ListView(
-                                      children: [
-                                        ForeCastToday(
-                                            foreCastCurrentDay:
-                                                foreCastCurrentDay),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        ForeCastNextDay(
-                                          foreCastDayOne: foreCastDayOne,
-                                        ),
-                                        const SizedBox(
-                                          height: 15,
-                                        ),
-                                        ForeCastNextTwoDays(
-                                          foreCastDayTwo: foreCastDayTwo,
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                          )
-                        ],
-                      ),
-              ));
+                              )
+                            ],
+                          ),
+                  ));
   }
 }

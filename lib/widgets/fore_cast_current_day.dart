@@ -13,7 +13,8 @@ class ForeCastToday extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(4),
+      margin: const EdgeInsets.all(2),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -27,15 +28,19 @@ class ForeCastToday extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                foreCastCurrentDay != null
-                    ? "Condition: ${foreCastCurrentDay!.condition}"
-                    : "",
-                style: style,
+              Flexible(
+                child: Text(
+                  foreCastCurrentDay != null
+                      ? "Condition: ${foreCastCurrentDay!.condition}"
+                      : "",
+                  style: style,
+                ),
               ),
-              Text(
-                "Today",
-                style: style,
+              Flexible(
+                child: Text(
+                  "Today",
+                  style: style,
+                ),
               ),
             ],
           ),
@@ -54,17 +59,21 @@ class ForeCastToday extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                foreCastCurrentDay != null
-                    ? "Humidity: ${foreCastCurrentDay!.avgHumidity}"
-                    : "",
-                style: style,
+              Flexible(
+                child: Text(
+                  foreCastCurrentDay != null
+                      ? "Humidity: ${foreCastCurrentDay!.avgHumidity}"
+                      : "",
+                  style: style,
+                ),
               ),
-              Text(
-                foreCastCurrentDay != null
-                    ? "WillRain:${foreCastCurrentDay!.dailyChanceOfRain == 0 ? "False" : "True"}"
-                    : "",
-                style: style,
+              Flexible(
+                child: Text(
+                  foreCastCurrentDay != null
+                      ? "WillRain:${foreCastCurrentDay!.dailyChanceOfRain == 0 ? "False" : "True"}"
+                      : "",
+                  style: style,
+                ),
               )
             ],
           )
