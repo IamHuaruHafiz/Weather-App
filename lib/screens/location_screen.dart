@@ -116,7 +116,7 @@ class _LocationScreenState extends State<LocationScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-        "An error occured",
+        "Error!\nPlease make sure you have internet connection",
         style: TextStyle(color: textColor),
       )));
     }

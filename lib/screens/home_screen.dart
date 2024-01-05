@@ -28,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
   ForeCastDayOne? foreCastDayOne;
   ForeCastDayTwo? foreCastDayTwo;
   Position? _currentPosition;
+  bool noconnection = false;
+  bool locationEnabled = false;
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -35,8 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!serviceEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-              "Location services are disabled. Please enable the services"),
+          content: Text("Allow location services to continue"),
         ),
       );
       return false;
@@ -62,65 +63,85 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       return false;
     }
-
+    setState(() {
+      locationEnabled = true;
+    });
     return true;
   }
 
   Future getCurrentPosition() async {
-    final getPermissions = await _handleLocationPermission();
-    if (!getPermissions) {
-      return const Center(
-        child: Text("Enable Location services"),
+    try {
+      final getPermissions = await _handleLocationPermission();
+      if (!getPermissions) return;
+      await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high)
+          .then((Position position) {
+        setState(() {
+          _currentPosition = position;
+        });
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Sorry,we couldn't process your results 0"),
+        ),
       );
     }
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-      });
-
-      getCurrentWeather();
-      getForecastWeather();
-    }).catchError((e) {
-      debugPrint(e.toString());
-    });
+    getCurrentWeather();
+    getForecastWeather();
   }
 
   Future getCurrentWeather() async {
-    final url =
-        "https://weatherapi-com.p.rapidapi.com/current.json?q=${_currentPosition?.latitude}%2C${_currentPosition?.longitude}";
-    final response = await http.get(Uri.parse(url), headers: {
-      'X-RapidAPI-Key': secreteKey,
-      'X-RapidAPI-Host': hostUrl,
-    });
-    if (response.statusCode == 200) {
-      final decodedResponse = jsonDecode(response.body) as Map<String, dynamic>;
-
-      setState(() {
-        currentWeather = CurrentWeather.fromJson(decodedResponse);
+    try {
+      final url =
+          "https://weatherapi-com.p.rapidapi.com/current.json?q=${_currentPosition?.latitude}%2C${_currentPosition?.longitude}";
+      final response = await http.get(Uri.parse(url), headers: {
+        'X-RapidAPI-Key': secreteKey,
+        'X-RapidAPI-Host': hostUrl,
       });
+      if (response.statusCode == 200) {
+        final decodedResponse =
+            jsonDecode(response.body) as Map<String, dynamic>;
+
+        setState(() {
+          currentWeather = CurrentWeather.fromJson(decodedResponse);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Sorry,we couldn't process your results 1"),
+        ),
+      );
     }
   }
 
   Future getForecastWeather() async {
-    final url =
-        "https://weatherapi-com.p.rapidapi.com/forecast.json?q=${_currentPosition?.latitude}%2C${_currentPosition?.longitude}&days=3";
-    final response = await http.get(Uri.parse(url), headers: {
-      'X-RapidAPI-Key': secreteKey,
-      'X-RapidAPI-Host': hostUrl,
-    });
-    if (response.statusCode == 200) {
-      final decodedResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      setState(() {
-        foreCastCurrentDay = ForeCastCurrentDay.fromJson(decodedResponse);
-        foreCastDayOne = ForeCastDayOne.fromJson(decodedResponse);
-        foreCastDayTwo = ForeCastDayTwo.fromJson(decodedResponse);
+    try {
+      final url =
+          "https://weatherapi-com.p.rapidapi.com/forecast.json?q=${_currentPosition?.latitude}%2C${_currentPosition?.longitude}&days=3";
+      final response = await http.get(Uri.parse(url), headers: {
+        'X-RapidAPI-Key': secreteKey,
+        'X-RapidAPI-Host': hostUrl,
       });
+      if (response.statusCode == 200) {
+        final decodedResponse =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        setState(() {
+          foreCastCurrentDay = ForeCastCurrentDay.fromJson(decodedResponse);
+          foreCastDayOne = ForeCastDayOne.fromJson(decodedResponse);
+          foreCastDayTwo = ForeCastDayTwo.fromJson(decodedResponse);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Sorry,we couldn't process your results 2"),
+        ),
+      );
     }
   }
 
-  bool noconnection = false;
-  bool locationEnabled = false;
   @override
   void initState() {
     var subscription = Connectivity()
@@ -141,19 +162,19 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
-    StreamSubscription<ServiceStatus> status =
-        Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
-      if (status == ServiceStatus.enabled) {
-        setState(() {
-          locationEnabled = true;
-          getCurrentPosition();
-        });
-      } else {
-        setState(() {
-          locationEnabled = false;
-        });
-      }
-    });
+    // var status =
+    //     Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+    //   if (status == ServiceStatus.enabled) {
+    //     setState(() {
+    //       locationEnabled = true;
+    //       getCurrentPosition();
+    //     });
+    //   } else {
+    //     setState(() {
+    //       locationEnabled = false;
+    //     });
+    //   }
+    // });
 
     super.initState();
   }
@@ -169,14 +190,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
         appBar: noconnection == true
             ? null
-            : locationEnabled == false
-                ? null
-                : AppBar(
-                    backgroundColor: Colors.transparent,
-                    actions: const [
-                      GetLocationButton(),
-                    ],
-                  ),
+            : AppBar(
+                backgroundColor: Colors.transparent,
+                actions: const [
+                  GetLocationButton(),
+                ],
+              ),
         backgroundColor: bgColor,
         body: noconnection == true
             ? Center(
@@ -185,8 +204,30 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             : locationEnabled == false
                 ? Center(
-                    child: Lottie.asset("assets/animations/location.json",
-                        height: 200, width: 200),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Allow Location Services",
+                          style: TextStyle(color: textColor),
+                        ),
+                        ElevatedButton(
+                            style: const ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Colors.black45),
+                                foregroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Colors.black)),
+                            onPressed: () {
+                              getCurrentPosition();
+                            },
+                            child: Text(
+                              "Allow",
+                              style: TextStyle(color: textColor),
+                            ))
+                      ],
+                    ),
                   )
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -210,9 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   IconButton.outlined(
                                       onPressed: () {
-                                        setState(() {
-                                          currentWeather = null;
-                                        });
                                         getCurrentPosition();
                                       },
                                       icon: Icon(
