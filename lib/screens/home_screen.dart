@@ -5,6 +5,7 @@ import 'package:dweather/widgets/display_current_weather.dart';
 import 'package:dweather/widgets/fore_cast_current_day.dart';
 import 'package:dweather/widgets/fore_cast_next_day.dart';
 import 'package:dweather/widgets/fore_cast_next_two_days.dart';
+import 'package:dweather/widgets/forecast_data.dart';
 import 'package:dweather/widgets/get_location_button.dart';
 import 'package:dweather/widgets/shimmer_effect.dart';
 import 'package:http/http.dart' as http;
@@ -31,17 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
   bool noconnection = false;
   bool locationEnabled = false;
   Future<bool> _handleLocationPermission() async {
-    bool serviceEnabled;
+    // bool serviceEnabled;
     LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Allow location services to continue"),
-        ),
-      );
-      return false;
-    }
+    // serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    // if (!serviceEnabled) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("Allow location services to continue"),
+    //     ),
+    //   );
+    //   return false;
+    // }
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -80,15 +81,18 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentPosition = position;
         });
       });
+      getCurrentWeather();
+      getForecastWeather();
     } catch (e) {
+      setState(() {
+        locationEnabled = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Sorry,we couldn't process your results 0"),
+          content: Text("Allow location services to continue"),
         ),
       );
     }
-    getCurrentWeather();
-    getForecastWeather();
   }
 
   Future getCurrentWeather() async {
@@ -110,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Sorry,we couldn't process your results 1"),
+          content: Text("Sorry,we couldn't process your request"),
         ),
       );
     }
@@ -134,9 +138,12 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
+      setState(() {
+        noData = true;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Sorry,we couldn't process your results 2"),
+          content: Text("Sorry,an error occured"),
         ),
       );
     }
@@ -158,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
           result == ConnectivityResult.other) {
         setState(() {
           noconnection = false;
-          getCurrentPosition();
         });
       }
     });
@@ -184,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  int selectedIndex = 0;
+  bool noData = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -251,6 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   IconButton.outlined(
                                       onPressed: () {
+                                        setState(() {
+                                          currentWeather = null;
+                                        });
                                         getCurrentPosition();
                                       },
                                       icon: Icon(
@@ -266,25 +275,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: textColor,
                                         ),
                                       )
-                                    : ListView(
-                                        children: [
-                                          ForeCastToday(
-                                              foreCastCurrentDay:
-                                                  foreCastCurrentDay),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          ForeCastNextDay(
+                                    : noData == true
+                                        ? const Center(
+                                            child: Text("No data!"),
+                                          )
+                                        : ForecastData(
+                                            foreCastCurrentDay:
+                                                foreCastCurrentDay,
                                             foreCastDayOne: foreCastDayOne,
-                                          ),
-                                          const SizedBox(
-                                            height: 15,
-                                          ),
-                                          ForeCastNextTwoDays(
-                                            foreCastDayTwo: foreCastDayTwo,
-                                          ),
-                                        ],
-                                      ),
+                                            foreCastDayTwo: foreCastDayTwo),
                               )
                             ],
                           ),

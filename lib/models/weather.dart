@@ -36,7 +36,7 @@ class ForeCastCurrentDay {
   final double minTempInC;
   final double maxTempInF;
   final double minTempInF;
-  final double avgHumidity;
+  final int avgHumidity;
   final int dailyChanceOfRain;
 
   ForeCastCurrentDay({
@@ -72,7 +72,7 @@ class ForeCastDayOne {
   final double minTempInC;
   final double maxTempInF;
   final double minTempInF;
-  final double avgHumidity;
+  final int avgHumidity;
   final int dailyChanceOfRain;
 
   ForeCastDayOne({
@@ -108,7 +108,7 @@ class ForeCastDayTwo {
   final double minTempInC;
   final double maxTempInF;
   final double minTempInF;
-  final double avgHumidity;
+  final int avgHumidity;
   final int dailyChanceOfRain;
   ForeCastDayTwo({
     required this.date,

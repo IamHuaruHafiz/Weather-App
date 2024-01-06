@@ -3,7 +3,6 @@ import 'package:dweather/components/colors.dart';
 import 'package:dweather/models/weather.dart';
 import 'package:dweather/widgets/row_item.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
