@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dweather/widgets/display_current_weather.dart';
-import 'package:dweather/widgets/fore_cast_current_day.dart';
-import 'package:dweather/widgets/fore_cast_next_day.dart';
-import 'package:dweather/widgets/fore_cast_next_two_days.dart';
 import 'package:dweather/widgets/forecast_data.dart';
 import 'package:dweather/widgets/get_location_button.dart';
 import 'package:dweather/widgets/shimmer_effect.dart';
@@ -32,17 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool noconnection = false;
   bool locationEnabled = false;
   Future<bool> _handleLocationPermission() async {
-    // bool serviceEnabled;
     LocationPermission permission;
-    // serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    // if (!serviceEnabled) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text("Allow location services to continue"),
-    //     ),
-    //   );
-    //   return false;
-    // }
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -168,26 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
-    // var status =
-    //     Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
-    //   if (status == ServiceStatus.enabled) {
-    //     setState(() {
-    //       locationEnabled = true;
-    //       getCurrentPosition();
-    //     });
-    //   } else {
-    //     setState(() {
-    //       locationEnabled = false;
-    //     });
-    //   }
-    // });
-
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   bool noData = false;
