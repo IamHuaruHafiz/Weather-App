@@ -168,8 +168,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "An error occurred",
+                          "An error occurred\nCheck your internet connection",
                           style: style,
+                          textAlign: TextAlign.center,
                         ),
                         ElevatedButton(
                             style: const ButtonStyle(

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dweather/components/colors.dart';
 import 'package:dweather/models/weather.dart';
 import 'package:flutter/material.dart';
@@ -15,21 +16,16 @@ class DisplayCurrentWeather extends StatelessWidget {
       children: [
         SizedBox(
             height: 150,
-            child: Image.network(
-              "https:${currentWeather!.icon.toString()}",
-              filterQuality: FilterQuality.high,
+            child: CachedNetworkImage(
               fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: textColor,
-                    ),
-                  );
-                }
-              },
+              imageUrl: "https:${currentWeather!.icon.toString()}",
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  Center(
+                      child: CircularProgressIndicator(
+                value: downloadProgress.progress,
+                color: textColor,
+              )),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             )),
         Text(
           "${currentWeather!.tempInC.toString()}°C",
