@@ -1,11 +1,9 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dweather/components/colors.dart';
 import 'package:dweather/models/weather.dart';
 import 'package:dweather/widgets/row_item.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:lottie/lottie.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -82,11 +80,7 @@ class _LocationScreenState extends State<LocationScreen> {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-        e.toString(),
-        style: TextStyle(color: textColor),
-      )));
+      debugPrint(e.toString());
     }
   }
 
@@ -121,29 +115,6 @@ class _LocationScreenState extends State<LocationScreen> {
     }
   }
 
-  bool noconnection = false;
-  @override
-  void initState() {
-    var subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.none) {
-        setState(() {
-          noconnection = true;
-        });
-      }
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi ||
-          result == ConnectivityResult.vpn ||
-          result == ConnectivityResult.other) {
-        setState(() {
-          noconnection = false;
-        });
-      }
-    });
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,62 +128,56 @@ class _LocationScreenState extends State<LocationScreen> {
           ),
         ),
         backgroundColor: bgColor,
-        body: noconnection == true
-            ? Center(
-                child: Lottie.asset("assets/animations/network.json",
-                    height: 200, width: 200),
-              )
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    children: [
-                      RowItem(name: "Locality", methodName: _localityName),
-                      RowItem(name: "Name", methodName: _name),
-                      RowItem(name: "Sub-locality", methodName: _subLocality),
-                      RowItem(
-                          name: "Administrative area",
-                          methodName: _administrativeArea),
-                      RowItem(
-                          name: "Sub-administrative area",
-                          methodName: _subAdministrativeArea),
-                      RowItem(name: "Street name", methodName: _streetName),
-                      RowItem(name: "Country name", methodName: _countryName),
-                      RowItem(name: "Country code", methodName: _countryCode),
-                      RowItem(
-                          name: "Latitude",
-                          methodName: _currentPosition?.latitude.toString()),
-                      RowItem(
-                          name: "Longitude",
-                          methodName: _currentPosition?.longitude.toString()),
-                      RowItem(name: "Postal code", methodName: _postalCode),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      isLoading
-                          ? CircularProgressIndicator(
-                              color: textColor,
-                            )
-                          : ElevatedButton(
-                              style: ButtonStyle(
-                                  foregroundColor:
-                                      MaterialStatePropertyAll<Color>(bgColor),
-                                  backgroundColor:
-                                      MaterialStatePropertyAll<Color>(
-                                          textColor)),
-                              onPressed: () {
-                                getCurrentPosition();
-                              },
-                              child: const Text(
-                                "Get current location",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ))
-                    ],
-                  ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: [
+                RowItem(name: "Locality", methodName: _localityName),
+                RowItem(name: "Name", methodName: _name),
+                RowItem(name: "Sub-locality", methodName: _subLocality),
+                RowItem(
+                    name: "Administrative area",
+                    methodName: _administrativeArea),
+                RowItem(
+                    name: "Sub-administrative area",
+                    methodName: _subAdministrativeArea),
+                RowItem(name: "Street name", methodName: _streetName),
+                RowItem(name: "Country name", methodName: _countryName),
+                RowItem(name: "Country code", methodName: _countryCode),
+                RowItem(
+                    name: "Latitude",
+                    methodName: _currentPosition?.latitude.toString()),
+                RowItem(
+                    name: "Longitude",
+                    methodName: _currentPosition?.longitude.toString()),
+                RowItem(name: "Postal code", methodName: _postalCode),
+                const SizedBox(
+                  height: 20,
                 ),
-              ));
+                isLoading
+                    ? CircularProgressIndicator(
+                        color: textColor,
+                      )
+                    : ElevatedButton(
+                        style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStatePropertyAll<Color>(bgColor),
+                            backgroundColor:
+                                MaterialStatePropertyAll<Color>(textColor)),
+                        onPressed: () {
+                          getCurrentPosition();
+                        },
+                        child: const Text(
+                          "Get current location",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ))
+              ],
+            ),
+          ),
+        ));
   }
 }

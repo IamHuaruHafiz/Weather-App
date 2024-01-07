@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dweather/widgets/display_current_weather.dart';
 import 'package:dweather/widgets/forecast_data.dart';
 import 'package:dweather/widgets/get_location_button.dart';
@@ -11,7 +10,6 @@ import 'package:dweather/components/colors.dart';
 import 'package:dweather/models/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,8 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   ForeCastDayOne? foreCastDayOne;
   ForeCastDayTwo? foreCastDayTwo;
   Position? _currentPosition;
-  bool noconnection = false;
   bool locationEnabled = false;
+  bool noData = false;
+
   Future<bool> _handleLocationPermission() async {
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
@@ -99,11 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Sorry,we couldn't process your request"),
-        ),
-      );
+      setState(() {
+        noData = true;
+      });
+      debugPrint(e.toString());
     }
   }
 
@@ -125,65 +123,53 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      setState(() {
-        noData = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Sorry,an error occured"),
-        ),
-      );
+      debugPrint(e.toString());
     }
   }
 
   @override
-  void initState() {
-    var subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.none) {
-        setState(() {
-          noconnection = true;
-        });
-      }
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi ||
-          result == ConnectivityResult.vpn ||
-          result == ConnectivityResult.other) {
-        setState(() {
-          noconnection = false;
-        });
-      }
-    });
-    super.initState();
-  }
-
-  bool noData = false;
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: noconnection == true
-            ? null
-            : AppBar(
-                backgroundColor: Colors.transparent,
-                actions: const [
-                  GetLocationButton(),
-                ],
-              ),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          actions: const [
+            GetLocationButton(),
+          ],
+        ),
         backgroundColor: bgColor,
-        body: noconnection == true
+        body: locationEnabled == false
             ? Center(
-                child: Lottie.asset("assets/animations/network.json",
-                    height: 200, width: 200),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Allow Location Services",
+                      style: TextStyle(color: textColor),
+                    ),
+                    ElevatedButton(
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll<Color>(Colors.black45),
+                            foregroundColor:
+                                MaterialStatePropertyAll<Color>(Colors.black)),
+                        onPressed: () {
+                          getCurrentPosition();
+                        },
+                        child: Text(
+                          "Allow",
+                          style: TextStyle(color: textColor),
+                        ))
+                  ],
+                ),
               )
-            : locationEnabled == false
+            : noData == true
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Allow Location Services",
-                          style: TextStyle(color: textColor),
+                          "An error occured",
+                          style: style,
                         ),
                         ElevatedButton(
                             style: const ButtonStyle(
@@ -194,12 +180,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     MaterialStatePropertyAll<Color>(
                                         Colors.black)),
                             onPressed: () {
+                              setState(() {
+                                noData = false;
+                                currentWeather == null;
+                              });
                               getCurrentPosition();
                             },
                             child: Text(
-                              "Allow",
+                              "Refresh",
                               style: TextStyle(color: textColor),
-                            ))
+                            )),
                       ],
                     ),
                   )
