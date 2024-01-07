@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "An error occured",
+                          "An error occurred",
                           style: style,
                         ),
                         ElevatedButton(
