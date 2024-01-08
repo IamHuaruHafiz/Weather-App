@@ -117,14 +117,15 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    TextStyle headerStyle =
+        TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: textColor);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           iconTheme: IconThemeData(color: textColor),
           title: Text(
             "Know your location",
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w700, color: textColor),
+            style: headerStyle,
           ),
         ),
         backgroundColor: bgColor,

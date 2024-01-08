@@ -18,17 +18,18 @@ class ForecastData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    var defaultPadding = MediaQuery.of(context).size.height * 0.02;
+    return Column(
       children: [
         ForeCastToday(foreCastCurrentDay: foreCastCurrentDay),
-        const SizedBox(
-          height: 12,
+        SizedBox(
+          height: defaultPadding,
         ),
         ForeCastNextDay(
           foreCastDayOne: foreCastDayOne,
         ),
-        const SizedBox(
-          height: 15,
+        SizedBox(
+          height: defaultPadding,
         ),
         ForeCastNextTwoDays(
           foreCastDayTwo: foreCastDayTwo,

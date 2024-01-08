@@ -13,9 +13,10 @@ class DisplayCurrentWeather extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-            height: 150,
+            height: 100,
             child: CachedNetworkImage(
               fit: BoxFit.cover,
               imageUrl: "https:${currentWeather!.icon.toString()}",

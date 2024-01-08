@@ -33,19 +33,13 @@ class ForeCastNextDay extends StatelessWidget {
                   foreCastDayOne != null
                       ? "Condition: ${foreCastDayOne!.condition}"
                       : "",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: textColor),
+                  style: style,
                 ),
               ),
               Flexible(
                 child: Text(
                   foreCastDayOne != null ? foreCastDayOne!.date : "",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: textColor),
+                  style: style,
                 ),
               ),
             ],
@@ -54,15 +48,13 @@ class ForeCastNextDay extends StatelessWidget {
             foreCastDayOne != null
                 ? "MaxTemp: ${foreCastDayOne!.maxTempInC}°C / ${foreCastDayOne!.maxTempInF}°F"
                 : "",
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w300, color: textColor),
+            style: style,
           ),
           Text(
             foreCastDayOne != null
                 ? "MinTemp: ${foreCastDayOne!.minTempInC}°C / ${foreCastDayOne!.minTempInF}°F"
                 : "",
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w300, color: textColor),
+            style: style,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,10 +64,7 @@ class ForeCastNextDay extends StatelessWidget {
                   foreCastDayOne != null
                       ? "Humidity: ${foreCastDayOne!.avgHumidity}"
                       : "",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: textColor),
+                  style: style,
                 ),
               ),
               Flexible(
@@ -83,10 +72,7 @@ class ForeCastNextDay extends StatelessWidget {
                   foreCastDayOne != null
                       ? "WillRain:${foreCastDayOne!.dailyChanceOfRain == 0 ? "False" : "True"}"
                       : "",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: textColor),
+                  style: style,
                 ),
               )
             ],

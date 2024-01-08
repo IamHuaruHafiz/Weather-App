@@ -131,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          elevation: 0,
           backgroundColor: Colors.transparent,
           actions: const [
             GetLocationButton(),
@@ -198,53 +199,46 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: currentWeather == null
                         ? const ShimmerEffect()
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              DisplayCurrentWeather(
-                                  currentWeather: currentWeather),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Weather Forecast",
-                                    style: TextStyle(
-                                        color: textColor,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  IconButton.outlined(
-                                      onPressed: () {
-                                        setState(() {
-                                          currentWeather = null;
-                                        });
-                                        getCurrentPosition();
-                                      },
-                                      icon: Icon(
-                                        Icons.cyclone_sharp,
-                                        color: textColor,
-                                      ))
-                                ],
-                              ),
-                              Expanded(
-                                child: foreCastCurrentDay == null
-                                    ? Center(
-                                        child: CircularProgressIndicator(
+                        : SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DisplayCurrentWeather(
+                                    currentWeather: currentWeather),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Weather Forecast",
+                                      style: TextStyle(
                                           color: textColor,
-                                        ),
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    IconButton.outlined(
+                                        onPressed: () {
+                                          setState(() {
+                                            currentWeather = null;
+                                          });
+                                          getCurrentPosition();
+                                        },
+                                        icon: Icon(
+                                          Icons.cyclone_sharp,
+                                          color: textColor,
+                                        ))
+                                  ],
+                                ),
+                                noData == true
+                                    ? const Center(
+                                        child: Text("No data!"),
                                       )
-                                    : noData == true
-                                        ? const Center(
-                                            child: Text("No data!"),
-                                          )
-                                        : ForecastData(
-                                            foreCastCurrentDay:
-                                                foreCastCurrentDay,
-                                            foreCastDayOne: foreCastDayOne,
-                                            foreCastDayTwo: foreCastDayTwo),
-                              )
-                            ],
+                                    : ForecastData(
+                                        foreCastCurrentDay: foreCastCurrentDay,
+                                        foreCastDayOne: foreCastDayOne,
+                                        foreCastDayTwo: foreCastDayTwo),
+                              ],
+                            ),
                           ),
                   ));
   }
