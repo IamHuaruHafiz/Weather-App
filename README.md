@@ -1,6 +1,6 @@
 # DWeather
 
-DWeather is a dynamic weather app that provides weather data for for the current user's location
+DWeather is a dynamic weather app that provides weather data based on the user's location
 
 ## Getting Started
 
