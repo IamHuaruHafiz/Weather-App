@@ -23,7 +23,7 @@ class _LocationScreenState extends State<LocationScreen> {
   String? _subAdministrativeArea;
   Position? _currentPosition;
   bool isLoading = false;
-  CurrentWeather? currentWeather;
+  WeatherData? currentWeather;
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;

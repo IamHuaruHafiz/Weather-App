@@ -19,10 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  CurrentWeather? currentWeather;
-  ForeCastCurrentDay? foreCastCurrentDay;
-  ForeCastDayOne? foreCastDayOne;
-  ForeCastDayTwo? foreCastDayTwo;
+  WeatherData? weatherData;
   Position? _currentPosition;
   bool locationEnabled = false;
   bool noData = false;
@@ -68,7 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       });
       getCurrentWeather();
-      getForecastWeather();
     } catch (e) {
       setState(() {
         locationEnabled = false;
@@ -84,30 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future getCurrentWeather() async {
     try {
       final url =
-          "https://weatherapi-com.p.rapidapi.com/current.json?q=${_currentPosition?.latitude}%2C${_currentPosition?.longitude}";
-      final response = await http.get(Uri.parse(url), headers: {
-        'X-RapidAPI-Key': secreteKey,
-        'X-RapidAPI-Host': hostUrl,
-      });
-      if (response.statusCode == 200) {
-        final decodedResponse =
-            jsonDecode(response.body) as Map<String, dynamic>;
-
-        setState(() {
-          currentWeather = CurrentWeather.fromJson(decodedResponse);
-        });
-      }
-    } catch (e) {
-      setState(() {
-        noData = true;
-      });
-      debugPrint(e.toString());
-    }
-  }
-
-  Future getForecastWeather() async {
-    try {
-      final url =
           "https://weatherapi-com.p.rapidapi.com/forecast.json?q=${_currentPosition?.latitude}%2C${_currentPosition?.longitude}&days=3";
       final response = await http.get(Uri.parse(url), headers: {
         'X-RapidAPI-Key': secreteKey,
@@ -117,12 +89,13 @@ class _HomeScreenState extends State<HomeScreen> {
         final decodedResponse =
             jsonDecode(response.body) as Map<String, dynamic>;
         setState(() {
-          foreCastCurrentDay = ForeCastCurrentDay.fromJson(decodedResponse);
-          foreCastDayOne = ForeCastDayOne.fromJson(decodedResponse);
-          foreCastDayTwo = ForeCastDayTwo.fromJson(decodedResponse);
+          weatherData = WeatherData.fromJson(decodedResponse);
         });
       }
     } catch (e) {
+      setState(() {
+        noData = true;
+      });
       debugPrint(e.toString());
     }
   }
@@ -184,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () {
                               setState(() {
                                 noData = false;
-                                currentWeather == null;
+                                weatherData == null;
                               });
                               getCurrentPosition();
                             },
@@ -197,14 +170,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: currentWeather == null
+                    child: weatherData == null
                         ? const ShimmerEffect()
                         : SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 DisplayCurrentWeather(
-                                    currentWeather: currentWeather),
+                                    currentWeather: weatherData),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -219,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     IconButton.outlined(
                                         onPressed: () {
                                           setState(() {
-                                            currentWeather = null;
+                                            weatherData = null;
                                           });
                                           getCurrentPosition();
                                         },
@@ -234,9 +207,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text("No data!"),
                                       )
                                     : ForecastData(
-                                        foreCastCurrentDay: foreCastCurrentDay,
-                                        foreCastDayOne: foreCastDayOne,
-                                        foreCastDayTwo: foreCastDayTwo),
+                                        foreCastWeather: weatherData,
+                                      ),
                               ],
                             ),
                           ),

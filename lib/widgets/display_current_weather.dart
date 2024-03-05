@@ -8,7 +8,7 @@ class DisplayCurrentWeather extends StatelessWidget {
     super.key,
     required this.currentWeather,
   });
-  final CurrentWeather? currentWeather;
+  final WeatherData? currentWeather;
 
   @override
   Widget build(BuildContext context) {

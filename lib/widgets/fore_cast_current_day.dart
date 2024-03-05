@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 class ForeCastToday extends StatelessWidget {
   const ForeCastToday({
     super.key,
-    required this.foreCastCurrentDay,
+    required this.weatherData,
+    required this.number,
   });
 
-  final ForeCastCurrentDay? foreCastCurrentDay;
+  final WeatherData? weatherData;
+  final int number;
 
   @override
   Widget build(BuildContext context) {
@@ -30,30 +32,38 @@ class ForeCastToday extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  foreCastCurrentDay != null
-                      ? "Condition: ${foreCastCurrentDay!.condition}"
+                  weatherData != null
+                      ? "Condition: ${number == 0 ? weatherData!.condition : number == 1 ? weatherData!.nextDaycondition : weatherData!.nextTwoDayscondition}"
                       : "",
                   style: style,
                 ),
               ),
               Flexible(
                 child: Text(
-                  "Today",
+                  number == 0
+                      ? "Today"
+                      : number == 1
+                          ? weatherData!.nextDayDate
+                          : weatherData!.nextTwoDaysDate,
                   style: style,
                 ),
               ),
             ],
           ),
           Text(
-            foreCastCurrentDay != null
-                ? "MaxTemp: ${foreCastCurrentDay!.maxTempInC}°C / ${foreCastCurrentDay!.maxTempInF}°F"
-                : "",
+            number == 0
+                ? "MaxTemp: ${weatherData!.currentDaymaxTempInC}°C / ${weatherData!.currentDaymaxTempInF}°F"
+                : number == 1
+                    ? "MaxTemp: ${weatherData!.nextDaymaxTempInC}°C / ${weatherData!.nextDaymaxTempInF}°F"
+                    : "MaxTemp: ${weatherData!.nextTwoDaysmaxTempInC}°C / ${weatherData!.nextTwoDaysmaxTempInF}°F",
             style: style,
           ),
           Text(
-            foreCastCurrentDay != null
-                ? "MinTemp: ${foreCastCurrentDay!.minTempInC}°C / ${foreCastCurrentDay!.minTempInF}°F"
-                : "",
+            number == 0
+                ? "MinTemp: ${weatherData!.currentDayminTempInC}°C / ${weatherData!.currentDayminTempInF}°F"
+                : number == 1
+                    ? "MinTemp: ${weatherData!.nextDayminTempInC}°C / ${weatherData!.nextDayminTempInF}°F"
+                    : "MinTemp: ${weatherData!.nextTwoDaysminTempInC}°C / ${weatherData!.nextTwoDaysminTempInF}°F",
             style: style,
           ),
           Row(
@@ -61,17 +71,21 @@ class ForeCastToday extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  foreCastCurrentDay != null
-                      ? "Humidity: ${foreCastCurrentDay!.avgHumidity}"
-                      : "",
+                  number == 0
+                      ? "Humidity: ${weatherData!.currentDayavgHumidity}"
+                      : number == 1
+                          ? "Humidity: ${weatherData!.nextDayavgHumidity}"
+                          : "Humidity: ${weatherData!.nextTwoDaysavgHumidity}",
                   style: style,
                 ),
               ),
               Flexible(
                 child: Text(
-                  foreCastCurrentDay != null
-                      ? "WillRain:${foreCastCurrentDay!.dailyChanceOfRain == 0 ? "False" : "True"}"
-                      : "",
+                  number == 0
+                      ? "WillRain:${weatherData!.currentDaydailyChanceOfRain == 0 ? "False" : "True"}"
+                      : number == 1
+                          ? "WillRain:${weatherData!.nextDaydailyChanceOfRain == 0 ? "False" : "True"}"
+                          : "WillRain:${weatherData!.nextTwoDaysdailyChanceOfRain == 0 ? "False" : "True"}",
                   style: style,
                 ),
               )
