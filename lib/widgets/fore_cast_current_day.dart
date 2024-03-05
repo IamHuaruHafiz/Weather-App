@@ -51,19 +51,15 @@ class ForeCastToday extends StatelessWidget {
             ],
           ),
           Text(
-            number == 0
-                ? "MaxTemp: ${weatherData!.currentDaymaxTempInC}°C / ${weatherData!.currentDaymaxTempInF}°F"
-                : number == 1
-                    ? "MaxTemp: ${weatherData!.nextDaymaxTempInC}°C / ${weatherData!.nextDaymaxTempInF}°F"
-                    : "MaxTemp: ${weatherData!.nextTwoDaysmaxTempInC}°C / ${weatherData!.nextTwoDaysmaxTempInF}°F",
+            weatherData != null
+                ? "MaxTemp: ${number == 0 ? weatherData!.currentDaymaxTempInC : number == 1 ? weatherData!.nextDaymaxTempInC : weatherData!.nextTwoDaysmaxTempInC}°C / ${number == 0 ? weatherData!.currentDaymaxTempInF : number == 1 ? weatherData!.nextDaymaxTempInF : weatherData!.nextTwoDaysmaxTempInF}°F"
+                : "",
             style: style,
           ),
           Text(
-            number == 0
-                ? "MinTemp: ${weatherData!.currentDayminTempInC}°C / ${weatherData!.currentDayminTempInF}°F"
-                : number == 1
-                    ? "MinTemp: ${weatherData!.nextDayminTempInC}°C / ${weatherData!.nextDayminTempInF}°F"
-                    : "MinTemp: ${weatherData!.nextTwoDaysminTempInC}°C / ${weatherData!.nextTwoDaysminTempInF}°F",
+            weatherData != null
+                ? "MinTemp: ${number == 0 ? weatherData!.currentDayminTempInC : number == 1 ? weatherData!.nextDayminTempInC : weatherData!.nextTwoDaysminTempInC}°C / ${number == 0 ? weatherData!.currentDayminTempInF : number == 1 ? weatherData!.nextDayminTempInF : weatherData!.nextTwoDaysminTempInF}°F"
+                : "",
             style: style,
           ),
           Row(
@@ -71,21 +67,17 @@ class ForeCastToday extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  number == 0
-                      ? "Humidity: ${weatherData!.currentDayavgHumidity}"
-                      : number == 1
-                          ? "Humidity: ${weatherData!.nextDayavgHumidity}"
-                          : "Humidity: ${weatherData!.nextTwoDaysavgHumidity}",
+                  weatherData != null
+                      ? "Humidity: ${number == 0 ? weatherData!.currentDayavgHumidity : number == 1 ? weatherData!.nextDayavgHumidity : weatherData!.nextTwoDaysavgHumidity}"
+                      : "",
                   style: style,
                 ),
               ),
               Flexible(
                 child: Text(
-                  number == 0
-                      ? "WillRain:${weatherData!.currentDaydailyChanceOfRain == 0 ? "False" : "True"}"
-                      : number == 1
-                          ? "WillRain:${weatherData!.nextDaydailyChanceOfRain == 0 ? "False" : "True"}"
-                          : "WillRain:${weatherData!.nextTwoDaysdailyChanceOfRain == 0 ? "False" : "True"}",
+                  weatherData != null
+                      ? "WillRain:${(number == 0 ? weatherData!.currentDaydailyChanceOfRain : number == 1 ? weatherData!.nextDaydailyChanceOfRain : weatherData!.nextTwoDaysdailyChanceOfRain) == 0 ? "False" : "True"}"
+                      : "",
                   style: style,
                 ),
               )

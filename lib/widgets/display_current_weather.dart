@@ -42,6 +42,8 @@ class DisplayCurrentWeather extends StatelessWidget {
             ),
             Text(
               currentWeather!.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   color: textColor.withOpacity(0.7),
                   fontSize: 25,
